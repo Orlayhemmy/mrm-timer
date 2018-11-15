@@ -1,14 +1,12 @@
 import json
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
 
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://drclaerh:kEACdRfROUl9xtjcGBBbpnMQtUlSSYXK@stampy.db.elephantsql.com:5432/drclaerh'
 db = SQLAlchemy(app)
-ma = Marshmallow(app)
 
 team = ['Olusola Oseni', 'Onuchukwu Chika', 'Taiwo Sunday']
 
@@ -19,11 +17,6 @@ class TeamMember(db.Model):
 
     def __repr__(self):
         return '<TeamMember %r>' % self.membername
-
-
-class TeamMemberSchema(ma.ModelSchema):
-    class Meta:
-      model = TeamMember
 
 
 
