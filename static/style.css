@@ -151,8 +151,7 @@ button {
 .add-new-member {
   display: flex;
   padding: 26px;
-  box-shadow: 0px 2px 0px #0000004d;
-  border-top: .1px solid #0000004d;
+  box-shadow: 0px 2px 0px #0000004d, inset 0 8px 6px -6px #0000001f;
 }
 
 .new-member-label {
