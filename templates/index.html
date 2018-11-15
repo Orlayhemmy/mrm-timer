@@ -1,1 +1,120 @@
-home
+<!doctype html>
+<title>jQuery Example</title>
+<link href="https://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</link>
+<script type="text/javascript">
+  let i;
+  let timer, teamPop, index;
+
+  function start(teamLength, loopIndex = 1, timeLength = 60) {
+    teamPop = teamLength;
+    index = loopIndex;
+
+    if (loopIndex !== 1) {  
+      currentMember = `member-${loopIndex}`;
+      $('.people-list').removeClass("active");
+      $(`#${currentMember}`).addClass("active");
+    }
+
+    i = timeLength;
+    timer = setInterval(increment, 1000);
+    document.getElementsByClassName('timer-control-icon')[0].innerHTML = `<img onclick="pause(${teamLength}, ${loopIndex})" src="https://img.icons8.com/android/500/cccccc/pause.png">`;
+  }
+
+  function stop() {
+    clearInterval(timer);
+  }
+
+  function pause(teamLength, loopIndex) {
+    clearInterval(timer);
+    document.getElementById('timer-control-icon').innerHTML = `<img onclick="start(${teamLength}, ${loopIndex}, ${i})" src="https://img.icons8.com/metro/500/cccccc/play.png">`;
+  }
+
+
+  function increment() {
+    if (i != 0) {
+      i = i % 360 - 1;
+      document.getElementById('timer-inner').innerHTML = i;
+    } else {
+      stop();
+      document.getElementById('timer-inner').innerHTML = 60;
+      if (teamPop !== index) {
+        index += 1;
+        start(teamPop, index, 60);
+      } else {
+        $('#elapsed').text('Time\'s up');
+      }
+    }
+  }
+
+  function startMember(teamLength, loopIndex, timeLength) {
+    stop();
+    start(teamLength, loopIndex, timeLength);
+  }
+</script>
+
+<body>
+  <div class="container">
+    <div class="rectangle">
+      <div class="circle">
+          <div class="small-circle"></div>
+      </div>
+    </div>
+    <div class="add-member-container">
+      <h1 class="title">MRM Team Timer</h1>
+    </div>
+    <div id="elapsed" class="elapsed"></div>
+    <div class="sub-container">
+      <div class="timer" id="timer">
+        <div id="timer-control-icon" class="timer-control-icon">
+          <img  onclick="start({{team|length}}, 1, 60)" src="https://img.icons8.com/metro/500/cccccc/play.png" />
+        </div>
+        <div class="timer-inner" id="timer-inner">
+          <input type="text" class="countdown-timer" value="60" />
+        </div>
+      </div>
+      <div class="team">
+        <div class="add-new-member">
+          <div class="new-member-label">New Member</div>
+          <form class="new-member-form" method="post" action="/add_member">
+            <input type="text" placeholder="Member name" value="" id="membername" name="membername"/>
+            <button type="submit">
+              <img class="plus-sign" type="submit" src="https://img.icons8.com/metro/200/95a5a6/plus.png" />
+            </button>
+          </form>
+        </div>
+        <div class="team-members">
+          {% for person in team %}
+            <div id="member-{{loop.index}}" class="people-list {{'active' if loop.index == 1 }}">
+            <span onclick="startMember({{team|length}}, {{loop.index}}, 60)" class="member-name">{{ person.membername }}</span>
+            <a href="{{ url_for('remove_member', member_id = person.id) }}">
+              <svg class="delete-icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                width="100" height="100" viewBox="0 0 252 252">
+                <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter"
+                  stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none"
+                  font-size="none" text-anchor="none">
+                  <path d="M0,252v-252h252v252z" fill="none"></path>
+                  <g>
+                    <g id="surface1">
+                      <path d="M63,68.25v131.25c0,11.60742 9.39258,21 21,21h84c11.60742,0 21,-9.39258 21,-21v-131.25z" fill="#666666"></path>
+                      <path d="M120.75,78.75h10.5v120.75h-10.5z" fill="#ffffff"></path>
+                      <path d="M152.25,78.75h10.5v120.75h-10.5z" fill="#ffffff"></path>
+                      <path d="M89.25,78.75h10.5v120.75h-10.5z" fill="#ffffff"></path>
+                      <path d="M52.5,57.75h147v21h-147z" fill="#cccccc"></path>
+                      <path d="M114.4541,68.39356c-2.58398,-2.80957 -4.2041,-6.52149 -4.2041,-10.64356c0,-8.69531 7.05469,-15.75 15.75,-15.75c8.69531,0 15.75,7.05469 15.75,15.75c0,4.12207 -1.62012,7.83399 -4.2041,10.64356h12.40723c1.45606,-3.26074 2.29688,-6.84961 2.29688,-10.64356c0,-14.49902 -11.75098,-26.25 -26.25,-26.25c-14.49902,0 -26.25,11.75098 -26.25,26.25c0,3.79394 0.84082,7.38281 2.29688,10.64356z" fill="#cccccc"></path>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
