@@ -1,14 +1,18 @@
-import json
+import os
+from os.path import join, dirname
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
 
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://drclaerh:kEACdRfROUl9xtjcGBBbpnMQtUlSSYXK@stampy.db.elephantsql.com:5432/drclaerh'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI');
 db = SQLAlchemy(app)
 
-team = ['Olusola Oseni', 'Onuchukwu Chika', 'Taiwo Sunday']
+time_limit = 60
 
 class TeamMember(db.Model):
     __tablename__ = 'team'
@@ -19,19 +23,17 @@ class TeamMember(db.Model):
         return '<TeamMember %r>' % self.membername
 
 
-
-
 @app.route('/')
 def index():
-  members = TeamMember.query.all()
-  member_list = []
-  for member in members:
-      member_list.append({
-        'id': member.id,
-        'membername': member.membername
-      })
+    members = TeamMember.query.all()
+    member_list = []
+    for member in members:
+        member_list.append({
+            'id': member.id,
+            'membername': member.membername
+        })
   
-  return render_template('index.html', team=member_list)
+    return render_template('index.html', team=member_list, timeLimit=time_limit)
 
 @app.route('/add_member', methods=['POST'])
 def member():
@@ -50,4 +52,4 @@ def remove_member(member_id):
     return index() 
 
 if __name__ == '__main__':
-  app.run(debug=True)
+    app.run(debug=True)
