@@ -154,6 +154,9 @@ button {
   pointer-events: none;
 }
 
+.checkmark {
+  padding: 0 10px;
+}
 
 /* timer */
 .timer {
@@ -197,6 +200,7 @@ button {
   font-size: 290px;
   color: white;
   font-family: 'Orbitron', sans-serif !important;
+  text-align: center;
 }
 
 
