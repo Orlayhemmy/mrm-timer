@@ -1,5 +1,5 @@
 <!doctype html>
-<title>=MRM Standup Timer</title>
+<title>MRM Standup Timer</title>
 <link href="https://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet">
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -7,49 +7,60 @@
 <script type="text/javascript">
   let i;
   let timer, teamPop, index;
+  let timeLimit = {{ timeLimit }};
 
-  function start(teamLength, loopIndex = 1, timeLength = 60) {
+  const editTimeLimit = () => {
+    $('#timer-input').removeClass("non-editable");
+    $('#time-limit-control').html(`<p onclick="saveTimeLimit()">Done</p>`);
+  }
+
+  const saveTimeLimit = () => {
+    $('#timer-input').addClass("non-editable");
+    timeLimit = $('#timer-input').val();
+    $('#time-limit-control').html(`<p onclick="editTimeLimit()">Edit</p>`);
+  }
+
+  const start = (teamLength, loopIndex = 1, timeLength = timeLimit) => {
     teamPop = teamLength;
     index = loopIndex;
 
     if (loopIndex !== 1) {  
       currentMember = `member-${loopIndex}`;
-      $('.people-list').removeClass("active");
+      $('.members-list').removeClass("active");
       $(`#${currentMember}`).addClass("active");
     }
 
     i = timeLength;
     timer = setInterval(increment, 1000);
-    document.getElementsByClassName('timer-control-icon')[0].innerHTML = `<img onclick="pause(${teamLength}, ${loopIndex})" src="https://img.icons8.com/android/500/cccccc/pause.png">`;
+    $('.timer-control-icon').html(`<img onclick="pause(${teamLength}, ${loopIndex})" src="https://img.icons8.com/android/500/cccccc/pause.png">`);
   }
 
-  function stop() {
+  const stop = () => {
     clearInterval(timer);
   }
 
-  function pause(teamLength, loopIndex) {
+  const pause = (teamLength, loopIndex) => {
     clearInterval(timer);
-    document.getElementById('timer-control-icon').innerHTML = `<img onclick="start(${teamLength}, ${loopIndex}, ${i})" src="https://img.icons8.com/metro/500/cccccc/play.png">`;
+    $('#timer-control-icon').html(`<img onclick="start(${teamLength}, ${loopIndex}, ${i})" src="https://img.icons8.com/metro/500/cccccc/play.png">`);
   }
 
-
-  function increment() {
+  const increment = () => {
     if (i != 0) {
       i = i % 360 - 1;
-      document.getElementById('timer-inner').innerHTML = i;
+      $('#timer-inner').html(i);
     } else {
       stop();
-      document.getElementById('timer-inner').innerHTML = 60;
+      $('#timer-inner').html(timeLimit);
       if (teamPop !== index) {
         index += 1;
-        start(teamPop, index, 60);
+        start(teamPop, index, timeLimit);
       } else {
-        $('#elapsed').text('Time\'s up');
+        $('#timer-control-icon').html(`<img onclick="start(${teamLength}, ${loopIndex})" src="https://img.icons8.com/metro/500/cccccc/play.png">`);
       }
     }
   }
 
-  function startMember(teamLength, loopIndex, timeLength) {
+  const startMember = (teamLength, loopIndex, timeLength) => {
     stop();
     start(teamLength, loopIndex, timeLength);
   }
@@ -59,20 +70,23 @@
   <div class="container">
     <div class="rectangle">
       <div class="circle">
-          <div class="small-circle"></div>
+        <div class="inner-circle"></div>
       </div>
     </div>
-    <div class="add-member-container">
+    <div class="title-container">
       <h1 class="title">MRM Team Timer</h1>
     </div>
-    <div id="elapsed" class="elapsed"></div>
+    <div id="timer-container" class="timer-container"></div>
     <div class="sub-container">
       <div class="timer" id="timer">
         <div id="timer-control-icon" class="timer-control-icon">
-          <img  onclick="start({{team|length}}, 1, 60)" src="https://img.icons8.com/metro/500/cccccc/play.png" />
+          <img  onclick="start({{team|length}}, 1)" src="https://img.icons8.com/metro/500/cccccc/play.png" />
         </div>
         <div class="timer-inner" id="timer-inner">
-          <input type="text" class="countdown-timer" value="60" />
+          <input type="number" id="timer-input" class="non-editable" value={{ timeLimit }} />
+          <span id="time-limit-control">
+            <p onclick="editTimeLimit()">Edit</p>
+          </span>
         </div>
       </div>
       <div class="team">
@@ -87,8 +101,8 @@
         </div>
         <div class="team-members">
           {% for person in team %}
-            <div id="member-{{loop.index}}" class="people-list {{'active' if loop.index == 1 }}">
-            <span onclick="startMember({{team|length}}, {{loop.index}}, 60)" class="member-name">{{ person.membername }}</span>
+            <div id="member-{{loop.index}}" class="members-list deactive {{'active' if loop.index == 1 }}">
+            <span onclick="startMember({{team|length}}, {{loop.index}})" class="member-name">{{ person.membername }}</span>
             <a href="{{ url_for('remove_member', member_id = person.id) }}">
               <svg class="delete-icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                 width="100" height="100" viewBox="0 0 252 252">
@@ -116,5 +130,4 @@
     </div>
   </div>
 </body>
-
 </html>
