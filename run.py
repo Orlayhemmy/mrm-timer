@@ -30,7 +30,7 @@ def index():
     for member in members:
         member_list.append({
             'id': member.id,
-            'membername': member.membername
+            'membername': member.membername.title()
         })
   
     return render_template('index.html', team=member_list, timeLimit=time_limit)

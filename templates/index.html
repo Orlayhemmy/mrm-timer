@@ -24,10 +24,14 @@
     teamPop = teamLength;
     index = loopIndex;
 
-    if (loopIndex !== 1) {  
-      currentMember = `member-${loopIndex}`;
-      $('.members-list').removeClass("active");
-      $(`#${currentMember}`).addClass("active");
+    if (loopIndex !== 1) { 
+      if ($(`#checkmark-${index}`).is(":hidden")) {
+        currentMember = `member-${loopIndex}`;
+        $('.members-list').removeClass("active");
+        $(`#${currentMember}`).addClass("active");
+      } else {
+        return
+      }
     }
 
     i = timeLength;
@@ -52,6 +56,7 @@
       stop();
       $('#timer-inner').html(timeLimit);
       if (teamPop !== index) {
+        $(`#checkmark-${index}`).toggle();
         index += 1;
         start(teamPop, index, timeLimit);
       } else {
@@ -102,6 +107,7 @@
         <div class="team-members">
           {% for person in team %}
             <div id="member-{{loop.index}}" class="members-list deactive {{'active' if loop.index == 1 }}">
+            <span id="checkmark-{{loop.index}}" class="checkmark" hidden>&#x2713;</span>
             <span onclick="startMember({{team|length}}, {{loop.index}})" class="member-name">{{ person.membername }}</span>
             <a href="{{ url_for('remove_member', member_id = person.id) }}">
               <svg class="delete-icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
