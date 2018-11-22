@@ -39,7 +39,10 @@
     $('.timer-control-icon').html(`<img onclick="pause(${teamLength}, ${loopIndex})" src="https://img.icons8.com/android/500/cccccc/pause.png">`);
   }
 
-  const stop = () => {
+  const stop = (loopIndex) => {
+    if (timer < 45) {
+      $(`#checkmark-${loopIndex}`).toggle();
+    }
     clearInterval(timer);
   }
 
@@ -66,7 +69,7 @@
   }
 
   const startMember = (teamLength, loopIndex, timeLength) => {
-    stop();
+    stop(loopIndex - 1);
     start(teamLength, loopIndex, timeLength);
   }
 </script>
